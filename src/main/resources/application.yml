@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/credits
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+  liquibase:
+    change-log: classpath:liquibase/changelog-master.yml
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: vovasamb999@gmail.com
+    password: pass
+    properties:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+      mail:
+        smtp:
+          starttls:
+            enable: true
