@@ -17,13 +17,13 @@ public class OrderService {
 
     public Order getById(Long id) {
         return orderRepository.findById(id).orElseThrow(
-                () -> new OrderNotFoundException("ORDER_NOT_FOUND")
+                () -> new OrderNotFoundException("Заказ с id " + id + "не найден")
         );
     }
 
     public Order getByOrderId(String orderId) {
         return orderRepository.findByOrderId(orderId).orElseThrow(
-                () -> new OrderNotFoundException("ORDER_NOT_FOUND")
+                () -> new OrderNotFoundException("Заказ с id " + orderId + "не найден")
         );
     }
 

@@ -6,7 +6,6 @@ import app.credits.exception.UserNotFoundException;
 import app.credits.entity.User;
 import app.credits.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -19,7 +18,7 @@ public class UserService {
 
     public User getById(Long id) {
         return userRepository.findById(id).orElseThrow(
-                () -> new UserNotFoundException("USER_NOT_FOUND")
+                () -> new UserNotFoundException("Пользователь с id " + id + " не найден")
         );
     }
 
@@ -39,11 +38,11 @@ public class UserService {
         User oldUser = getById(user.getId());
 
         if (!oldUser.getPassword().equals(user.getPassword())) {
-            throw new PasswordCannotChangeException("CANNOT_CHANGE_PASSWORD");
+            throw new PasswordCannotChangeException("Пароль должен быть изменён отдельно");
         }
 
         if (!oldUser.getRole().equals(user.getRole())) {
-            throw new RoleCannotChangeException("CANNOT_CHANGE_ROLE");
+            throw new RoleCannotChangeException("Роль может быть изменена только администратором");
         }
 
         return userRepository.save(user);

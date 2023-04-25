@@ -1,7 +1,9 @@
 package app.credits.exception;
 
-public class OrderNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class OrderNotFoundException extends WebExceptionWithInfo {
     public OrderNotFoundException(String message) {
-        super(message);
+        super("ORDER_NOT_FOUND", message, HttpStatus.BAD_REQUEST);
     }
 }

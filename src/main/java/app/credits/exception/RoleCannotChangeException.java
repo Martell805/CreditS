@@ -1,7 +1,9 @@
 package app.credits.exception;
 
-public class RoleCannotChangeException extends RuntimeException {
-    public RoleCannotChangeException(String message) {
-        super(message);
+import org.springframework.http.HttpStatus;
+
+public class RoleCannotChangeException extends WebExceptionWithInfo{
+    public RoleCannotChangeException(String info) {
+        super("CANNOT_CHANGE_ROLE", info, HttpStatus.FORBIDDEN);
     }
 }

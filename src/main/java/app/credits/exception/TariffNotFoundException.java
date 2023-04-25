@@ -1,7 +1,9 @@
 package app.credits.exception;
 
-public class TariffNotFoundException extends RuntimeException {
-    public TariffNotFoundException(String message) {
-        super(message);
+import org.springframework.http.HttpStatus;
+
+public class TariffNotFoundException extends WebExceptionWithInfo{
+    public TariffNotFoundException(String info) {
+        super("TARIFF_NOT_FOUND", info, HttpStatus.BAD_REQUEST);
     }
 }

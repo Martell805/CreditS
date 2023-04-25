@@ -19,7 +19,7 @@ public class OrderStatusService {
 
     public String getStatusOrder(String orderId) {
         Order order = orderRepository.findByOrderId(orderId).orElseThrow(
-                () -> new OrderNotFoundException("Order " + orderId + " not found")
+                () -> new OrderNotFoundException("Заказ с id " + orderId + "не найден")
         );
         return order.getStatus();
     }

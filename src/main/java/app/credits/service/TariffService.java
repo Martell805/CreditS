@@ -14,7 +14,7 @@ public class TariffService {
 
     public Tariff getById(Long id) {
         return tariffRepository.findById(id).orElseThrow(
-                () -> new TariffNotFoundException("TARIFF_NOT_FOUND")
+                () -> new TariffNotFoundException("Тариф с id " + id + "не найден")
         );
     }
 
