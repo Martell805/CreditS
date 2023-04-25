@@ -19,11 +19,11 @@ CREATE TABLE tariffs (
 
 CREATE TABLE users (
     id                  BIGSERIAL NOT NULL PRIMARY KEY,
-    username            TEXT NOT NULL,
+    username            TEXT NOT NULL UNIQUE,
     password            TEXT NOT NULL,
-    email               TEXT NOT NULL,
+    email               TEXT NOT NULL UNIQUE,
     name                TEXT NOT NULL,
-    passport            TEXT NOT NULL,
+    passport            TEXT NOT NULL UNIQUE,
     role                TEXT NOT NULL,
     email_subscription  BOOLEAN NOT NULL
 );

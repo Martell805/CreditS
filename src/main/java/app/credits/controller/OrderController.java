@@ -1,9 +1,8 @@
 package app.credits.controller;
 
 import app.credits.entity.Order;
-import app.credits.entity.Tariff;
 import app.credits.entity.User;
-import app.credits.exception.OrderNotFoundException;
+import app.credits.exception.*;
 import app.credits.model.OrderCreation;
 import app.credits.model.OrderDeletion;
 import app.credits.service.OrderService;
@@ -39,13 +38,6 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getByOrderId(orderId));
     }
 
-    @GetMapping("orders/me")
-    public ResponseEntity<List<Order>> getAllMine(Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-
-        return ResponseEntity.ok(orderService.getAllByUserId(user.getId()));
-    }
-
     @GetMapping("/getStatusOrder")
     public ResponseEntity<String> getStatusOrder(@RequestParam String orderId){
         return ResponseEntity.ok(orderStatusService.getStatusOrder(orderId));
@@ -53,20 +45,22 @@ public class OrderController {
 
     @PostMapping("orders")
     public ResponseEntity<Order> post(@RequestBody OrderCreation orderCreation){
-        Tariff tariff = tariffService.getById(orderCreation.getTariffId());
+        tariffService.getById(orderCreation.getTariffId());
 
-        List<Order> orders = orderService.getAllByUserId(orderCreation.getUserId());
+        Order order;
 
-        if (!orders.isEmpty()) {
-            return switch (orders.get(0).getStatus()) {
-                case "IN_PROGRESS" -> new ResponseEntity("LOAN_CONSIDERATION", HttpStatus.BAD_REQUEST);
-                case "APPROVED" -> new ResponseEntity("LOAN_ALREADY_APPROVED", HttpStatus.BAD_REQUEST);
-                case "REFUSED" -> new ResponseEntity("TRY_LATER", HttpStatus.BAD_REQUEST);
-                default -> new ResponseEntity("CORRUPTED_ORDER", HttpStatus.BAD_REQUEST);
-            };
+        try {
+            order = orderService.getByUserId(orderCreation.getUserId());
+        } catch (OrderNotFoundException e) {
+            return ResponseEntity.ok(orderService.add(orderCreation));
         }
 
-        return ResponseEntity.ok(orderService.add(orderCreation));
+        throw switch (order.getStatus()) {
+            case "IN_PROGRESS" -> new LoanConservationException("У пользователя с id " + orderCreation.getUserId() + " уже есть завяка на кредит на рассмотрении с id заявки " + order.getOrderId());
+            case "APPROVED" -> new LoanAlreadyApprovedException("У пользователя с id " + orderCreation.getUserId() + " уже есть одобренная завяка на кредит с id заявки " + order.getOrderId());
+            case "REFUSED" -> new TryLaterException("У пользователя с id " + orderCreation.getUserId() + " уже есть отклонённая завяка на кредит с id заявки " + order.getOrderId());
+            default -> new CorruptedOrderException("У пользователя с id " + orderCreation.getUserId() + " уже есть испорченная завяка на кредит с id заявки " + order.getOrderId());
+        };
     }
 
     @PostMapping("orders/me")
@@ -94,18 +88,14 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@RequestBody OrderDeletion orderDeletion){
         Order order;
 
-        try {
-            order = orderService.getByOrderId(orderDeletion.getOrderId());
-        } catch (OrderNotFoundException orderNotFoundException) {
-            return new ResponseEntity("ORDER_NOT_FOUND", HttpStatus.BAD_REQUEST);
-        }
+        order = orderService.getByOrderId(orderDeletion.getOrderId());
 
         if(!order.getUserId().equals(orderDeletion.getUserId())) {
-            return new ResponseEntity("ORDER_NOT_FOUND", HttpStatus.BAD_REQUEST);
+            throw new OrderNotFoundException("Заявка с id пользователя " + orderDeletion.getUserId() + " не найдена");
         }
 
         if(order.getStatus().equals("IN_PROGRESS")) {
-            return new ResponseEntity("ORDER_IMPOSSIBLE_TO_DELETE", HttpStatus.BAD_REQUEST);
+            throw new OrderImpossibleToDeleteException("Заявка с id заявки " + orderDeletion.getOrderId() + " в процессе рассмотрения");
         }
 
         orderService.delete(order);

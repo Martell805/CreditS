@@ -45,7 +45,7 @@ public class UserService {
             throw new RoleCannotChangeException("Роль может быть изменена только администратором");
         }
 
-        return userRepository.save(user);
+        return userRepository.update(user);
     }
 
     public User changePassword(Long userId, String newPassword) {
@@ -54,7 +54,7 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedPassword);
 
-        return userRepository.save(user);
+        return userRepository.update(user);
     }
 
     public User changeRole(Long userId, String newRole) {
@@ -62,7 +62,7 @@ public class UserService {
 
         user.setRole(newRole);
 
-        return userRepository.save(user);
+        return userRepository.update(user);
     }
 
     public User delete(User user) {
@@ -73,11 +73,11 @@ public class UserService {
 
     public User subscribe(User user) {
         user.setEmailSubscription(true);
-        return userRepository.save(user);
+        return userRepository.update(user);
     }
 
     public User unsubscribe(User user) {
         user.setEmailSubscription(false);
-        return userRepository.save(user);
+        return userRepository.update(user);
     }
 }

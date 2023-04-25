@@ -27,7 +27,7 @@ public class TariffService {
     }
 
     public Tariff edit(Tariff tariff) {
-        return tariffRepository.save(tariff);
+        return tariffRepository.update(tariff);
     }
 
     public Tariff delete(Tariff tariff) {

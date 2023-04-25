@@ -36,7 +36,7 @@ public class OrderStatusService {
         }
 
         order.setTimeUpdate(new Date());
-        orderRepository.save(order);
+        orderRepository.update(order);
 
         User user = userService.getById(order.getUserId());
         emailService.sendIfSubscribed(user, new Email(
