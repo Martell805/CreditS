@@ -41,8 +41,10 @@ public class LoggingAspect {
         return proceed;
     }
 
-    @After("execution(* app.credits.service.EmailService.sendEmail(..))  && args(user, ..)")
+    @After("execution(* app.credits.service.EmailService.sendIfSubscribed(..))  && args(user, ..)")
     public void logEmailNotification(User user) {
-        log.info("Notified user {} on email {}", user.getUsername(), user.getEmail());
+        if (user.getEmailSubscription()) {
+            log.info("Notified user {} on email {}", user.getUsername(), user.getEmail());
+        }
     }
 }
