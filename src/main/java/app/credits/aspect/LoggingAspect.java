@@ -33,7 +33,7 @@ public class LoggingAspect {
     }
 
     @Around("execution(* app.credits.service.*.*(..))")
-    public Object breakIfNeeded(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object logServiceMethod(ProceedingJoinPoint joinPoint) throws Throwable {
         log.info("Started service's {} method {}", joinPoint.getTarget().getClass().getSimpleName(), joinPoint.getSignature().getName());
         Object proceed = joinPoint.proceed();
         log.info("Ended service's {} method {}", joinPoint.getTarget().getClass().getSimpleName(), joinPoint.getSignature().getName());
@@ -42,7 +42,7 @@ public class LoggingAspect {
     }
 
     @After("execution(* app.credits.service.EmailService.sendEmail(..))  && args(user, ..)")
-    public void logEmailNotification(User user) throws Throwable {
+    public void logEmailNotification(User user) {
         log.info("Notified user {} on email {}", user.getUsername(), user.getEmail());
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionControllerAdvice {
     @ExceptionHandler(WebExceptionWithInfo.class)
-    public ResponseEntity<ErrorResponse> handleOrderNotFoundException(WebExceptionWithInfo e) {
+    public ResponseEntity<ErrorResponse> handleWebExceptionWithInfo(WebExceptionWithInfo e) {
         return new ResponseEntity<>(new ErrorResponse(
                 e.getMessage(),
                 e.getInfo()

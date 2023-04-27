@@ -4,6 +4,7 @@ import app.credits.exception.PasswordCannotChangeException;
 import app.credits.exception.RoleCannotChangeException;
 import app.credits.exception.UserNotFoundException;
 import app.credits.entity.User;
+import app.credits.model.Email;
 import app.credits.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public User getById(Long id) {
         return userRepository.findById(id).orElseThrow(
@@ -53,6 +55,11 @@ public class UserService {
 
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedPassword);
+
+        emailService.sendIfSubscribed(user, new Email(
+                "Изменение пароля",
+                user.getName() + ", ваш пароль был изменён."
+        ));
 
         return userRepository.update(user);
     }

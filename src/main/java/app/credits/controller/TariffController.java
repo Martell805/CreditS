@@ -18,22 +18,22 @@ public class TariffController {
         return ResponseEntity.ok(tariffService.getAll());
     }
 
-    @GetMapping("tariffs/{id}")
+    @GetMapping("tariff/{id}")
     public ResponseEntity<Tariff> get(@PathVariable Long id){
         return ResponseEntity.ok(tariffService.getById(id));
     }
 
-    @PostMapping("tariffs")
+    @PostMapping("tariff")
     public ResponseEntity<Tariff> post(@RequestBody Tariff tariff){
         return ResponseEntity.ok(tariffService.add(tariff));
     }
 
-    @PatchMapping("tariffs")
+    @PatchMapping("tariff")
     public ResponseEntity<Tariff> patch(@RequestBody Tariff tariff){
         return ResponseEntity.ok(tariffService.edit(tariff));
     }
 
-    @DeleteMapping("tariffs")
+    @DeleteMapping("tariff")
     public ResponseEntity<Tariff> delete(@RequestBody Tariff tariff){
         return ResponseEntity.ok(tariffService.delete(tariff));
     }

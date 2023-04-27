@@ -1,6 +1,6 @@
 package app.credits.service;
 
-import app.credits.exception.OrderNotFoundException;
+import app.credits.exception.*;
 import app.credits.entity.Order;
 import app.credits.model.OrderCreation;
 import app.credits.repository.OrderRepository;
@@ -14,6 +14,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
+
+    private final TariffService tariffService;
 
     public Order getById(Long id) {
         return orderRepository.findById(id).orElseThrow(
@@ -35,6 +37,25 @@ public class OrderService {
 
     public List<Order> getAll() {
         return orderRepository.findAll();
+    }
+
+    public Order addOrderByOrderCreation(OrderCreation orderCreation) {
+        tariffService.getById(orderCreation.getTariffId());
+
+        Order order;
+
+        try {
+            order = getByUserId(orderCreation.getUserId());
+        } catch (OrderNotFoundException e) {
+            return add(orderCreation);
+        }
+
+        throw switch (order.getStatus()) {
+            case "IN_PROGRESS" -> new LoanConservationException("У пользователя с id " + orderCreation.getUserId() + " уже есть завяка на кредит на рассмотрении с id заявки " + order.getOrderId());
+            case "APPROVED" -> new LoanAlreadyApprovedException("У пользователя с id " + orderCreation.getUserId() + " уже есть одобренная завяка на кредит с id заявки " + order.getOrderId());
+            case "REFUSED" -> new TryLaterException("У пользователя с id " + orderCreation.getUserId() + " уже есть отклонённая завяка на кредит с id заявки " + order.getOrderId());
+            default -> new CorruptedOrderException("У пользователя с id " + orderCreation.getUserId() + " уже есть испорченная завяка на кредит с id заявки " + order.getOrderId());
+        };
     }
 
     public Order add(Order order) {
