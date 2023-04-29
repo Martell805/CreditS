@@ -52,7 +52,7 @@ public class UserRepository {
                 user.getEmail(),
                 user.getName(),
                 user.getPassport(),
-                user.getRole(),
+                user.getRole().name(),
                 user.getEmailSubscription()
         );
 
@@ -68,7 +68,7 @@ public class UserRepository {
                 user.getEmail(),
                 user.getName(),
                 user.getPassport(),
-                user.getRole(),
+                user.getRole().name(),
                 user.getEmailSubscription(),
                 user.getId()
         );

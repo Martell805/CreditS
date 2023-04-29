@@ -1,5 +1,6 @@
 package app.credits.service;
 
+import app.credits.enums.Role;
 import app.credits.exception.PasswordCannotChangeException;
 import app.credits.exception.RoleCannotChangeException;
 import app.credits.exception.UserNotFoundException;
@@ -25,6 +26,12 @@ public class UserService {
         );
     }
 
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new UserNotFoundException(messageService.getMessage("exceptions.user_not_found_by_email", email))
+        );
+    }
+
     public List<User> getAll() {
         return userRepository.findAll();
     }
@@ -32,7 +39,7 @@ public class UserService {
     public User add(User user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-        user.setRole("USER");
+        user.setRole(Role.USER);
 
         return userRepository.save(user);
     }
@@ -65,7 +72,7 @@ public class UserService {
         return userRepository.update(user);
     }
 
-    public User changeRole(Long userId, String newRole) {
+    public User changeRole(Long userId, Role newRole) {
         User user = getById(userId);
 
         user.setRole(newRole);

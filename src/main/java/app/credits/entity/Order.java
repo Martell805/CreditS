@@ -1,5 +1,6 @@
 package app.credits.entity;
 
+import app.credits.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;
@@ -19,7 +20,7 @@ public class Order {
     private Long userId;
     private Long tariffId;
     private Double creditRating;
-    private String status;
+    private OrderStatus status;
     private Date timeInsert;
     private Date timeUpdate;
 }

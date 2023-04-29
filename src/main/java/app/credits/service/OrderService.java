@@ -1,5 +1,6 @@
 package app.credits.service;
 
+import app.credits.enums.OrderStatus;
 import app.credits.exception.*;
 import app.credits.entity.Order;
 import app.credits.model.OrderCreation;
@@ -52,10 +53,9 @@ public class OrderService {
         }
 
         throw switch (order.getStatus()) {
-            case "IN_PROGRESS" -> new LoanConservationException(messageService.getMessage("exceptions.loan_conservation_exception", orderCreation.getUserId(), order.getOrderId()));
-            case "APPROVED" -> new LoanAlreadyApprovedException(messageService.getMessage("exceptions.loan_already_approved_exception", orderCreation.getUserId(), order.getOrderId()));
-            case "REFUSED" -> new TryLaterException(messageService.getMessage("exceptions.try_later_exception", orderCreation.getUserId(), order.getOrderId()));
-            default -> new CorruptedOrderException(messageService.getMessage("exceptions.corrupted_order_exception", orderCreation.getUserId(), order.getOrderId()));
+            case IN_PROGRESS -> new LoanConservationException(messageService.getMessage("exceptions.loan_conservation_exception", orderCreation.getUserId(), order.getOrderId()));
+            case APPROVED -> new LoanAlreadyApprovedException(messageService.getMessage("exceptions.loan_already_approved_exception", orderCreation.getUserId(), order.getOrderId()));
+            case REFUSED -> new TryLaterException(messageService.getMessage("exceptions.try_later_exception", orderCreation.getUserId(), order.getOrderId()));
         };
     }
 
@@ -70,7 +70,7 @@ public class OrderService {
                 orderCreation.getUserId(),
                 orderCreation.getTariffId(),
                 (double) Math.round(Math.random() * 10) / 10 * 0.8 + 0.1,
-                "IN_PROGRESS",
+                OrderStatus.IN_PROGRESS,
                 new Date(),
                 new Date()
         ));

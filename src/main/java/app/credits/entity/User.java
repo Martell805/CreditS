@@ -1,5 +1,6 @@
 package app.credits.entity;
 
+import app.credits.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,12 +25,12 @@ public class User implements UserDetails {
     private String email;
     private String name;
     private String passport;
-    private String role;
+    private Role role;
     private Boolean emailSubscription;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package app.credits.service;
 
 import app.credits.entity.User;
+import app.credits.enums.OrderStatus;
 import app.credits.exception.OrderNotFoundException;
 import app.credits.entity.Order;
 import app.credits.model.Email;
@@ -18,7 +19,7 @@ public class OrderStatusService {
     private final EmailService emailService;
     private final MessageService messageService;
 
-    public String getStatusOrder(String orderId) {
+    public OrderStatus getStatusOrder(String orderId) {
         Order order = orderRepository.findByOrderId(orderId).orElseThrow(
                 () -> new OrderNotFoundException(messageService.getMessage("exceptions.order_not_found_by_order_id", orderId))
         );
@@ -26,14 +27,14 @@ public class OrderStatusService {
     }
 
     private void reviewOrder(Order order) {
-        if (!order.getStatus().equals("IN_PROGRESS")){
+        if (!order.getStatus().equals(OrderStatus.IN_PROGRESS)){
             return;
         }
 
         if (Math.random() >= 0.5) {
-            order.setStatus("APPROVED");
+            order.setStatus(OrderStatus.APPROVED);
         } else {
-            order.setStatus("REFUSED");
+            order.setStatus(OrderStatus.REFUSED);
         }
 
         order.setTimeUpdate(new Date());
@@ -42,7 +43,7 @@ public class OrderStatusService {
         User user = userService.getById(order.getUserId());
         emailService.sendIfSubscribed(user, new Email(
                 messageService.getMessage("email.status_changed.subject"),
-                messageService.getMessage("email.status_changed.message", user.getName(), order.getOrderId(), order.getStatus())
+                messageService.getMessage("email.status_changed.message", user.getName(), order.getOrderId(), order.getStatus().name())
         ));
     }
 

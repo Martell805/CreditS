@@ -2,6 +2,7 @@ package app.credits.controller;
 
 import app.credits.entity.Order;
 import app.credits.entity.User;
+import app.credits.enums.OrderStatus;
 import app.credits.exception.*;
 import app.credits.model.OrderCreation;
 import app.credits.model.OrderDeletion;
@@ -45,12 +46,12 @@ public class OrderController {
     }
 
     @GetMapping("/getStatusOrder")
-    public ResponseEntity<String> getStatusOrder(@RequestParam String orderId){
+    public ResponseEntity<OrderStatus> getStatusOrder(@RequestParam String orderId){
         return ResponseEntity.ok(orderStatusService.getStatusOrder(orderId));
     }
 
     @GetMapping("/getStatusOrder/me")
-    public ResponseEntity<String> getStatusOrder(Authentication authentication){
+    public ResponseEntity<OrderStatus> getStatusOrder(Authentication authentication){
         User user = (User) authentication.getPrincipal();
         Order order = orderService.getByUserId(user.getId());
 
@@ -95,7 +96,7 @@ public class OrderController {
             throw new OrderNotFoundException(messageService.getMessage("exceptions.order_not_found_by_user_id", orderDeletion.getUserId()));
         }
 
-        if(order.getStatus().equals("IN_PROGRESS")) {
+        if(order.getStatus().equals(OrderStatus.IN_PROGRESS)) {
             throw new OrderImpossibleToDeleteException(messageService.getMessage("exceptions.order_is_impossible_to_delete", orderDeletion.getOrderId()));
         }
 

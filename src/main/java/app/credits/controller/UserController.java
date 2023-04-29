@@ -1,6 +1,7 @@
 package app.credits.controller;
 
 import app.credits.entity.User;
+import app.credits.enums.Role;
 import app.credits.exception.NoPermissionException;
 import app.credits.service.MessageService;
 import app.credits.service.UserService;
@@ -71,7 +72,7 @@ public class UserController {
 
     @PatchMapping("user/{id}/changeRole")
     public ResponseEntity<User> changeRole(@PathVariable Long id,
-                                           @RequestParam String newRole){
+                                           @RequestParam Role newRole){
         return ResponseEntity.ok(userService.changeRole(id, newRole));
     }
 

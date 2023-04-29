@@ -52,19 +52,22 @@ public class SecurityConfig {
         return httpSecurity
                 .httpBasic().and()
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/loan-service/user").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/loan-service/getTariffs").permitAll()
+                        .requestMatchers("/loan-service/getTariffs").permitAll()
                         .requestMatchers("/loan-service/tariff").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, "/loan-service/user").permitAll()
                         .requestMatchers("/loan-service/user/me").authenticated()
                         .requestMatchers("/loan-service/user/me/**").authenticated()
-                        .requestMatchers("/loan-service/user").hasAuthority("ADMIN")
                         .requestMatchers("/loan-service/getUsers").hasAuthority("ADMIN")
+                        .requestMatchers("/loan-service/user").hasAuthority("ADMIN")
                         .requestMatchers("/loan-service/user/**").hasAuthority("ADMIN")
+
                         .requestMatchers("/loan-service/order/me").authenticated()
+                        .requestMatchers("/loan-service/getOrders").hasAuthority("ADMIN")
                         .requestMatchers("/loan-service/order").hasAuthority("ADMIN")
                         .requestMatchers("/loan-service/order/**").hasAuthority("ADMIN")
-                        .requestMatchers("/loan-service/getOrders").hasAuthority("ADMIN")
                         .requestMatchers("/loan-service/getStatusOrder").hasAuthority("ADMIN")
+
                         .requestMatchers("/loan-service/**").authenticated()
                         .requestMatchers("**").permitAll()
                 )

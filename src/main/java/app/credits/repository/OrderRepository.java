@@ -65,7 +65,7 @@ public class OrderRepository {
                 order.getUserId(),
                 order.getTariffId(),
                 order.getCreditRating(),
-                order.getStatus(),
+                order.getStatus().name(),
                 order.getTimeInsert(),
                 order.getTimeUpdate()
         );
@@ -81,7 +81,7 @@ public class OrderRepository {
                 order.getUserId(),
                 order.getTariffId(),
                 order.getCreditRating(),
-                order.getStatus(),
+                order.getStatus().name(),
                 order.getTimeInsert(),
                 order.getTimeUpdate(),
                 order.getId()
