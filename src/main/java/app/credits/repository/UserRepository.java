@@ -1,7 +1,9 @@
 package app.credits.repository;
 
 import app.credits.entity.User;
+import app.credits.exception.OrderNotFoundException;
 import app.credits.exception.UserNotFoundException;
+import app.credits.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -14,6 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final MessageService messageService;
 
     public List<User> findAll() {
         return jdbcTemplate.query("SELECT * FROM users", BeanPropertyRowMapper.newInstance(User.class));
@@ -54,7 +57,7 @@ public class UserRepository {
         );
 
         return findByEmail(user.getEmail()).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с email " + user.getEmail() + " не найден")
+                () -> new OrderNotFoundException(messageService.getMessage("exceptions.user_not_found_by_email", user.getEmail()))
         );
     }
 
@@ -71,13 +74,13 @@ public class UserRepository {
         );
 
         return findById(user.getId()).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id " + user.getId() + " не найден")
+                () -> new OrderNotFoundException(messageService.getMessage("exceptions.user_not_found_by_id", user.getId()))
         );
     }
 
     public User delete(User user) {
         User oldUser = findByEmail(user.getEmail()).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с email " + user.getEmail() + " не найден")
+                () -> new OrderNotFoundException(messageService.getMessage("exceptions.user_not_found_by_email", user.getEmail()))
         );
 
         jdbcTemplate.update("DELETE FROM users WHERE id=?",

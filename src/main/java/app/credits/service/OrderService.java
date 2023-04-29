@@ -16,22 +16,23 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     private final TariffService tariffService;
+    private final MessageService messageService;
 
     public Order getById(Long id) {
         return orderRepository.findById(id).orElseThrow(
-                () -> new OrderNotFoundException("Заявка с id " + id + "не найдена")
+                () -> new OrderNotFoundException(messageService.getMessage("exceptions.order_not_found_by_id", id))
         );
     }
 
     public Order getByOrderId(String orderId) {
         return orderRepository.findByOrderId(orderId).orElseThrow(
-                () -> new OrderNotFoundException("Заявка с id " + orderId + "не найдена")
+                () -> new OrderNotFoundException(messageService.getMessage("exceptions.order_not_found_by_order_id", orderId))
         );
     }
 
     public Order getByUserId(Long userId) {
         return orderRepository.findByUserId(userId).orElseThrow(
-                () -> new OrderNotFoundException("Заявка с id пользователя " + userId + "не найдена")
+                () -> new OrderNotFoundException(messageService.getMessage("exceptions.order_not_found_by_user_id", userId))
         );
     }
 
@@ -51,10 +52,10 @@ public class OrderService {
         }
 
         throw switch (order.getStatus()) {
-            case "IN_PROGRESS" -> new LoanConservationException("У пользователя с id " + orderCreation.getUserId() + " уже есть завяка на кредит на рассмотрении с id заявки " + order.getOrderId());
-            case "APPROVED" -> new LoanAlreadyApprovedException("У пользователя с id " + orderCreation.getUserId() + " уже есть одобренная завяка на кредит с id заявки " + order.getOrderId());
-            case "REFUSED" -> new TryLaterException("У пользователя с id " + orderCreation.getUserId() + " уже есть отклонённая завяка на кредит с id заявки " + order.getOrderId());
-            default -> new CorruptedOrderException("У пользователя с id " + orderCreation.getUserId() + " уже есть испорченная завяка на кредит с id заявки " + order.getOrderId());
+            case "IN_PROGRESS" -> new LoanConservationException(messageService.getMessage("exceptions.loan_conservation_exception", orderCreation.getUserId(), order.getOrderId()));
+            case "APPROVED" -> new LoanAlreadyApprovedException(messageService.getMessage("exceptions.loan_already_approved_exception", orderCreation.getUserId(), order.getOrderId()));
+            case "REFUSED" -> new TryLaterException(messageService.getMessage("exceptions.try_later_exception", orderCreation.getUserId(), order.getOrderId()));
+            default -> new CorruptedOrderException(messageService.getMessage("exceptions.corrupted_order_exception", orderCreation.getUserId(), order.getOrderId()));
         };
     }
 

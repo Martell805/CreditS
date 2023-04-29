@@ -2,6 +2,7 @@ package app.credits.repository;
 
 import app.credits.entity.Tariff;
 import app.credits.exception.TariffNotFoundException;
+import app.credits.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TariffRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final MessageService messageService;
 
     public List<Tariff> findAll() {
         return jdbcTemplate.query("SELECT * FROM tariffs", BeanPropertyRowMapper.newInstance(Tariff.class));
@@ -49,7 +51,7 @@ public class TariffRepository {
         );
 
         return findByType(tariff.getType()).orElseThrow(
-                () -> new TariffNotFoundException("Тариф с типом" + tariff.getType() + "не найден")
+                () -> new TariffNotFoundException(messageService.getMessage("exceptions.tariff_not_found_by_type", tariff.getType()))
         );
     }
 
@@ -61,13 +63,13 @@ public class TariffRepository {
         );
 
         return findById(tariff.getId()).orElseThrow(
-                () -> new TariffNotFoundException("Тариф с id" + tariff.getId() + "не найден")
+                () -> new TariffNotFoundException(messageService.getMessage("exceptions.tariff_not_found_by_id", tariff.getId()))
         );
     }
 
     public Tariff delete(Tariff tariff) {
         Tariff oldTariff = findByType(tariff.getType()).orElseThrow(
-                () -> new TariffNotFoundException("Тариф с типом" + tariff.getType() + "не найден")
+                () -> new TariffNotFoundException(messageService.getMessage("exceptions.tariff_not_found_by_type", tariff.getType()))
         );
 
         jdbcTemplate.update("DELETE FROM tariffs WHERE id=?",

@@ -11,10 +11,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TariffService {
     private final TariffRepository tariffRepository;
+    private final MessageService messageService;
 
     public Tariff getById(Long id) {
         return tariffRepository.findById(id).orElseThrow(
-                () -> new TariffNotFoundException("Тариф с id " + id + "не найден")
+                () -> new TariffNotFoundException(messageService.getMessage("exceptions.tariff_not_found_by_id", id))
         );
     }
 

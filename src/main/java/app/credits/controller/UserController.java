@@ -2,6 +2,7 @@ package app.credits.controller;
 
 import app.credits.entity.User;
 import app.credits.exception.NoPermissionException;
+import app.credits.service.MessageService;
 import app.credits.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final MessageService messageService;
 
     @GetMapping("/getUsers")
     public ResponseEntity<List<User>> getAll(){
@@ -48,7 +50,7 @@ public class UserController {
         User currentUser = (User) authentication.getPrincipal();
 
         if (!currentUser.getId().equals(user.getId())) {
-            throw new NoPermissionException("У вас нет прав на изменение других пользователей");
+            throw new NoPermissionException(messageService.getMessage("exceptions.no_change_permission"));
         }
 
         return ResponseEntity.ok(userService.edit(user));
@@ -79,7 +81,7 @@ public class UserController {
         User currentUser = (User) authentication.getPrincipal();
 
         if (!currentUser.getId().equals(user.getId())) {
-            throw new NoPermissionException("У вас нет прав на удаление других пользователей");
+            throw new NoPermissionException(messageService.getMessage("exceptions.no_delete_permission"));
         }
 
         return ResponseEntity.ok(userService.delete(user));

@@ -2,6 +2,7 @@ package app.credits.repository;
 
 import app.credits.entity.Order;
 import app.credits.exception.OrderNotFoundException;
+import app.credits.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final MessageService messageService;
 
     public List<Order> findAll() {
         return jdbcTemplate.query("SELECT * FROM orders", BeanPropertyRowMapper.newInstance(Order.class));
@@ -69,7 +71,7 @@ public class OrderRepository {
         );
 
         return findByOrderId(order.getOrderId()).orElseThrow(
-                () -> new OrderNotFoundException("Заявка с id заявки " + order.getOrderId() + " не найдена")
+                () -> new OrderNotFoundException(messageService.getMessage("exceptions.order_not_found_by_order_id", order.getOrderId()))
         );
     }
 
@@ -86,13 +88,13 @@ public class OrderRepository {
         );
 
         return findById(order.getId()).orElseThrow(
-                () -> new OrderNotFoundException("Заявка с id " + order.getId() + " не найдена")
+                () -> new OrderNotFoundException(messageService.getMessage("exceptions.order_not_found_by_id", order.getId()))
         );
     }
 
     public Order delete(Order order) {
         Order oldOrder = findByOrderId(order.getOrderId()).orElseThrow(
-                () -> new OrderNotFoundException("Заявка с id заявки " + order.getOrderId() + " не найдена")
+                () -> new OrderNotFoundException(messageService.getMessage("exceptions.order_not_found_by_order_id", order.getOrderId()))
         );
 
         jdbcTemplate.update("DELETE FROM orders WHERE id=?",

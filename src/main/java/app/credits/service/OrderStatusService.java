@@ -16,10 +16,11 @@ public class OrderStatusService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final EmailService emailService;
+    private final MessageService messageService;
 
     public String getStatusOrder(String orderId) {
         Order order = orderRepository.findByOrderId(orderId).orElseThrow(
-                () -> new OrderNotFoundException("Заказ с id " + orderId + "не найден")
+                () -> new OrderNotFoundException(messageService.getMessage("exceptions.order_not_found_by_order_id", orderId))
         );
         return order.getStatus();
     }
@@ -40,8 +41,8 @@ public class OrderStatusService {
 
         User user = userService.getById(order.getUserId());
         emailService.sendIfSubscribed(user, new Email(
-                "Статус заявки",
-                user.getName() + ", статус вашей заявки " + order.getOrderId() + " изменён на " + order.getStatus()
+                messageService.getMessage("email.status_changed.subject"),
+                messageService.getMessage("email.status_changed.message", user.getName(), order.getOrderId(), order.getStatus())
         ));
     }
 

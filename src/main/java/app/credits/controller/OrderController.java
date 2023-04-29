@@ -5,6 +5,7 @@ import app.credits.entity.User;
 import app.credits.exception.*;
 import app.credits.model.OrderCreation;
 import app.credits.model.OrderDeletion;
+import app.credits.service.MessageService;
 import app.credits.service.OrderService;
 import app.credits.service.OrderStatusService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 public class OrderController {
     private final OrderService orderService;
     private final OrderStatusService orderStatusService;
+    private final MessageService messageService;
 
     @GetMapping("/getOrders")
     public ResponseEntity<List<Order>> getAll(){
@@ -90,11 +92,11 @@ public class OrderController {
         order = orderService.getByOrderId(orderDeletion.getOrderId());
 
         if(!order.getUserId().equals(orderDeletion.getUserId())) {
-            throw new OrderNotFoundException("Заявка с id пользователя " + orderDeletion.getUserId() + " не найдена");
+            throw new OrderNotFoundException(messageService.getMessage("exceptions.order_not_found_by_user_id", orderDeletion.getUserId()));
         }
 
         if(order.getStatus().equals("IN_PROGRESS")) {
-            throw new OrderImpossibleToDeleteException("Заявка с id заявки " + orderDeletion.getOrderId() + " в процессе рассмотрения");
+            throw new OrderImpossibleToDeleteException(messageService.getMessage("exceptions.order_is_impossible_to_delete", orderDeletion.getOrderId()));
         }
 
         orderService.delete(order);

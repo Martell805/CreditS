@@ -17,10 +17,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final MessageService messageService;
 
     public User getById(Long id) {
         return userRepository.findById(id).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id " + id + " не найден")
+                () -> new UserNotFoundException(messageService.getMessage("exceptions.user_not_found_by_id", id))
         );
     }
 
@@ -40,11 +41,11 @@ public class UserService {
         User oldUser = getById(user.getId());
 
         if (!oldUser.getPassword().equals(user.getPassword())) {
-            throw new PasswordCannotChangeException("Пароль должен быть изменён отдельно");
+            throw new PasswordCannotChangeException(messageService.getMessage("exceptions.password_cannot_change"));
         }
 
         if (!oldUser.getRole().equals(user.getRole())) {
-            throw new RoleCannotChangeException("Роль может быть изменена только администратором");
+            throw new RoleCannotChangeException(messageService.getMessage("exceptions.cannot_change_role"));
         }
 
         return userRepository.update(user);
@@ -57,8 +58,8 @@ public class UserService {
         user.setPassword(encodedPassword);
 
         emailService.sendIfSubscribed(user, new Email(
-                "Изменение пароля",
-                user.getName() + ", ваш пароль был изменён."
+                messageService.getMessage("email.password_changed.subject"),
+                messageService.getMessage("email.password_changed.message", user.getName())
         ));
 
         return userRepository.update(user);
