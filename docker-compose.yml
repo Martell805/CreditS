@@ -9,8 +9,7 @@ services:
     ports:
       - "5432:5432"
   app:
-    build: .
-    image: 'credits:latest'
+    image: 'martell805/credits:1.0'
     container_name: CreditS
     depends_on:
       - postgres

@@ -1,13 +1,9 @@
 # Инструкция по запуску
-Используется Java 17
 Проект работает на порте 8080
 
 ##C Docker'ом
-Для работы необходимы Docker, Maven и переменная среды `JAVA_HOME` с путём к JDK 17
-
-- Запустить `start.cmd`, он соберёт прокт в jar-файл, запуллит образ `postgres:latest`,
-  создаст образ `credits` и с их помощью создаст Docker-compose `credits`
-
+- Запустить `docker-compose.yml` (для этого в директории с проектом ввести `docker-compose up`), он запуллит образы `postgres:latest` и `martell805/credits` 
+и с их помощью создаст Docker-compose `credits`
 
 ##Без Docker'а
 ### База данных
@@ -16,5 +12,6 @@
 - Создать базу данных `credits`
 - PostgreSQL должен работать на порте `5432`
 ### Приложение
+- Используется Java 17
 - Запустить `CreditSApplication.java`
 - К приложению подключен Swagger
